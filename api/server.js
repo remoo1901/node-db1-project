@@ -13,7 +13,7 @@ server.use(express.json());
 server.get("/api/accounts", async (req, res, next) => {
   try {
     const data = await db.select("*").from("accounts");
-    
+
     res.status(200).json(data);
   } catch (err) {
     next(err);
@@ -32,6 +32,30 @@ server.get("/api/accounts/:id", async (req, res, next) => {
       .where("id", req.params.id);
 
     res.status("200").json(data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+//-----------------------
+// POST new Account
+//-----------------------
+
+server.post("/api/accounts", async (req, res, next) => {
+  try {
+    const payload = {
+      name: req.body.name,
+      budget: req.body.budget,
+    };
+
+    const [accountID] = await db.insert(payload).into("accounts");
+
+    const NewAccount = await db
+      .first("*")
+      .from("accounts")
+      .where("id", accountID);
+
+    res.status(201).json(NewAccount);
   } catch (err) {
     next(err);
   }
