@@ -61,4 +61,31 @@ server.post("/api/accounts", async (req, res, next) => {
   }
 });
 
+//-----------------------
+// EDIT (PUT) Account
+//-----------------------
+
+server.put("/api/accounts/:id", async (req, res, next) => {
+  try {
+    const payload = {
+      name: req.body.name,
+      budget: req.body.budget,
+    };
+
+    await db("accounts").update(payload).where("id", req.params.id);
+
+    const updated = await db
+      .first("*")
+      .from("accounts")
+      .where("id", req.params.id);
+
+    res.status(201).json(updated);
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+
+
 module.exports = server;
